@@ -349,9 +349,8 @@ void FlowSensitiveStat::statPtsSize()
         if (size > _MaxTopLvlPtsSize)	_MaxTopLvlPtsSize = size;
     }
 
-    if (totalValidTopLvlPointers != 0) {
+    if (totalValidTopLvlPointers != 0)
         _AvgTopLvlPtsSize = (double)topTopLvlPtsSize/totalValidTopLvlPointers;
-    }
 
     _TotalPtsSize += topTopLvlPtsSize;
     u32_t totalPointer = totalValidTopLvlPointers + _NumOfVarHaveINOUTPts[IN] + _NumOfVarHaveINOUTPts[OUT];

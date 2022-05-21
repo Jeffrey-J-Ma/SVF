@@ -474,13 +474,13 @@ llvm::cl::opt<bool> Options::OPTSVFG(
 const llvm::cl::opt<std::string> Options::WriteSVFG(
     "write-svfg",  
     llvm::cl::init(""),
-    llvm::cl::desc("Write Andersen's analysis results to a file")
+    llvm::cl::desc("Write SVFG's analysis results to a file")
 );
 
 const llvm::cl::opt<std::string> Options::ReadSVFG(
     "read-svfg",  
     llvm::cl::init(""),
-    llvm::cl::desc("Read Andersen's analysis results from a file")
+    llvm::cl::desc("Read SVFG's analysis results from a file")
 );
 
 // FSMPTA.cpp
