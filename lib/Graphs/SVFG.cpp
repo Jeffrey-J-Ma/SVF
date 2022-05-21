@@ -36,7 +36,7 @@
 #include "Util/Options.h"
 #include "MemoryModel/PointerAnalysisImpl.h"
 #include <fstream>
-#include "Util/Options.h"
+
 
 using namespace SVF;
 using namespace SVFUtil;
@@ -226,23 +226,19 @@ void SVFG::buildSVFG()
     DBOUT(DGENERAL, outs() << pasMsg("Build Sparse Value-Flow Graph \n"));
 
     stat->startClk();
-    if (!Options::ReadSVFG.empty())
-    {       
-        readFile(Options::ReadSVFG);
-    } 
-    else 
-    {
+
     DBOUT(DGENERAL, outs() << pasMsg("\tCreate SVFG Addr-taken Node\n"));
+
     stat->ATVFNodeStart();
     addSVFGNodesForAddrTakenVars();
     stat->ATVFNodeEnd();
-        DBOUT(DGENERAL, outs() << pasMsg("\tCreate SVFG Indirect Edge\n"));
-        stat->indVFEdgeStart();
-        connectIndirectSVFGEdges();
-        stat->indVFEdgeEnd();
-        if (!Options::WriteSVFG.empty())
-            writeToFile(Options::WriteSVFG);
-    }
+
+    DBOUT(DGENERAL, outs() << pasMsg("\tCreate SVFG Indirect Edge\n"));
+
+    stat->indVFEdgeStart();
+    connectIndirectSVFGEdges();
+    stat->indVFEdgeEnd();
+
 }
 
 /*
@@ -324,7 +320,7 @@ void SVFG::addSVFGNodesForAddrTakenVars()
  */
 void SVFG::connectIndirectSVFGEdges()
 {
-    
+
     for(iterator it = begin(), eit = end(); it!=eit; ++it)
     {
         NodeID nodeId = it->first;
@@ -578,15 +574,15 @@ void SVFG::dump(const std::string& file, bool simple)
 /**
  * Get all inter value flow edges at this indirect call site, including call and return edges.
  */
-void SVFG::getInterVFEdgesForIndirectCallSite(const CallICFGNode* callICFGNode, const SVFFunction* callee, SVFGEdgeSetTy& edges)
+void SVFG::getInterVFEdgesForIndirectCallSite(const CallICFGNode* callBlockNode, const SVFFunction* callee, SVFGEdgeSetTy& edges)
 {
-    CallSiteID csId = getCallSiteID(callICFGNode, callee);
-    RetICFGNode* retICFGNode = pag->getICFG()->getRetICFGNode(callICFGNode->getCallSite());
+    CallSiteID csId = getCallSiteID(callBlockNode, callee);
+    RetICFGNode* retBlockNode = pag->getICFG()->getRetICFGNode(callBlockNode->getCallSite());
 
     // Find inter direct call edges between actual param and formal param.
-    if (pag->hasCallSiteArgsMap(callICFGNode) && pag->hasFunArgsList(callee))
+    if (pag->hasCallSiteArgsMap(callBlockNode) && pag->hasFunArgsList(callee))
     {
-        const SVFIR::SVFVarList& csArgList = pag->getCallSiteArgsList(callICFGNode);
+        const SVFIR::SVFVarList& csArgList = pag->getCallSiteArgsList(callBlockNode);
         const SVFIR::SVFVarList& funArgList = pag->getFunArgsList(callee);
         SVFIR::SVFVarList::const_iterator csArgIt = csArgList.begin(), csArgEit = csArgList.end();
         SVFIR::SVFVarList::const_iterator funArgIt = funArgList.begin(), funArgEit = funArgList.end();
@@ -595,7 +591,7 @@ void SVFG::getInterVFEdgesForIndirectCallSite(const CallICFGNode* callICFGNode, 
             const PAGNode *cs_arg = *csArgIt;
             const PAGNode *fun_arg = *funArgIt;
             if (fun_arg->isPointer() && cs_arg->isPointer())
-                getInterVFEdgeAtIndCSFromAPToFP(cs_arg, fun_arg, callICFGNode, csId, edges);
+                getInterVFEdgeAtIndCSFromAPToFP(cs_arg, fun_arg, callBlockNode, csId, edges);
         }
         assert(funArgIt == funArgEit && "function has more arguments than call site");
         if (callee->getLLVMFun()->isVarArg())
@@ -608,25 +604,25 @@ void SVFG::getInterVFEdgesForIndirectCallSite(const CallICFGNode* callICFGNode, 
                 {
                     const PAGNode *cs_arg = *csArgIt;
                     if (cs_arg->isPointer())
-                        getInterVFEdgeAtIndCSFromAPToFP(cs_arg, varFunArgNode, callICFGNode, csId, edges);
+                        getInterVFEdgeAtIndCSFromAPToFP(cs_arg, varFunArgNode, callBlockNode, csId, edges);
                 }
             }
         }
     }
 
     // Find inter direct return edges between actual return and formal return.
-    if (pag->funHasRet(callee) && pag->callsiteHasRet(retICFGNode))
+    if (pag->funHasRet(callee) && pag->callsiteHasRet(retBlockNode))
     {
-        const PAGNode* cs_return = pag->getCallSiteRet(retICFGNode);
+        const PAGNode* cs_return = pag->getCallSiteRet(retBlockNode);
         const PAGNode* fun_return = pag->getFunRet(callee);
         if (cs_return->isPointer() && fun_return->isPointer())
             getInterVFEdgeAtIndCSFromFRToAR(fun_return, cs_return, csId, edges);
     }
 
     // Find inter indirect call edges between actual-in and formal-in svfg nodes.
-    if (hasFuncEntryChi(callee) && hasCallSiteMu(callICFGNode))
+    if (hasFuncEntryChi(callee) && hasCallSiteMu(callBlockNode))
     {
-        SVFG::ActualINSVFGNodeSet& actualInNodes = getActualINSVFGNodes(callICFGNode);
+        SVFG::ActualINSVFGNodeSet& actualInNodes = getActualINSVFGNodes(callBlockNode);
         for(SVFG::ActualINSVFGNodeSet::iterator ai_it = actualInNodes.begin(),
                 ai_eit = actualInNodes.end(); ai_it!=ai_eit; ++ai_it)
         {
@@ -636,9 +632,9 @@ void SVFG::getInterVFEdgesForIndirectCallSite(const CallICFGNode* callICFGNode, 
     }
 
     // Find inter indirect return edges between actual-out and formal-out svfg nodes.
-    if (hasFuncRetMu(callee) && hasCallSiteChi(callICFGNode))
+    if (hasFuncRetMu(callee) && hasCallSiteChi(callBlockNode))
     {
-        SVFG::ActualOUTSVFGNodeSet& actualOutNodes = getActualOUTSVFGNodes(callICFGNode);
+        SVFG::ActualOUTSVFGNodeSet& actualOutNodes = getActualOUTSVFGNodes(callBlockNode);
         for(SVFG::ActualOUTSVFGNodeSet::iterator ao_it = actualOutNodes.begin(),
                 ao_eit = actualOutNodes.end(); ao_it!=ao_eit; ++ao_it)
         {

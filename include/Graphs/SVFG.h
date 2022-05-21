@@ -262,10 +262,6 @@ public:
         return dvpNode;
     }
 
-    virtual void writeToFile(const std::string& filename);
-    virtual void readFile(const std::string& filename);
-    virtual MRVer* getMRVERFromString(const std::string& input);
-
 protected:
     /// Add indirect def-use edges of a memory region between two statements,
     //@{
