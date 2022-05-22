@@ -46,7 +46,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           echo $(pwd)
-          git clone "https://github.com/SVF-tools/Test-Suite.git";
+          git clone "https://github.com/Jeffrey-J-Ma/Test-Suite.git";
           source ${{github.workspace}}/build.sh
       # run ctest
       - name: ctest points-to
