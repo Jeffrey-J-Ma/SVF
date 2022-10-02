@@ -42,7 +42,9 @@ jobs:
           echo $(pwd)
           if [ "$RUNNER_OS" == "Linux" ]; then sed -i "s/-fno-rtti/-fno-rtti -fprofile-arcs -ftest-coverage/g" CMakeLists.txt; fi
           git clone "https://github.com/Jeffrey-J-Ma/Test-Suite.git";
+          cd Test-Suite
           git checkout ff-eq-base-fix
+          cd ..
           source ${{github.workspace}}/build.sh
       # run ctest
       # run ctest
