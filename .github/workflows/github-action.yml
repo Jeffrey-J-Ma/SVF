@@ -41,7 +41,8 @@ jobs:
           cd $GITHUB_WORKSPACE
           echo $(pwd)
           if [ "$RUNNER_OS" == "Linux" ]; then sed -i "s/-fno-rtti/-fno-rtti -fprofile-arcs -ftest-coverage/g" CMakeLists.txt; fi
-          git clone "https://github.com/SVF-tools/Test-Suite.git";
+          git clone "https://github.com/Jeffrey-J-Ma/Test-Suite.git";
+          git checkout ff-eq-base-fix
           source ${{github.workspace}}/build.sh
       # run ctest
       # run ctest

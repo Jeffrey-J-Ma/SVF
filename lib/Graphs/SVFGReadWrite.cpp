@@ -352,7 +352,7 @@ void SVFG::readFile(const string& filename)
             continue;
 
         std::string s = line;
-        std::string delimiter = " >= ";
+        std::string delimiter = ">= ";
         string temp;
         // int index = 0;
         size_t last = 0;
@@ -360,7 +360,7 @@ void SVFG::readFile(const string& filename)
         string edge;
         string attributes;
 
-        next = s.find(delimiter);
+        next = s.find(delimiter) - 1;
 
         edge = s.substr(0, next);
         attributes = s.substr(next + 4);
@@ -369,18 +369,18 @@ void SVFG::readFile(const string& filename)
         NodeID src;
         NodeID dst;
         next = edge.find("srcSVFGNodeID: ") + 15;
-        last = edge.find(" => ");
+        last = edge.find("=> ") - 1;
         src = atoi(edge.substr(next, last-next).c_str());
         next = edge.find("dstSVFGNodeID: ") + 15;
         dst = atoi(edge.substr(next).c_str());
 
         string type;
         string attribute;
-        if (attributes.find(" | ") == string::npos)
+        if (attributes.find("| ") - 1 == string::npos)
             type = attributes;
         else
         {
-            next = attributes.find(" | ");
+            next = attributes.find("| ") - 1;
             type = attributes.substr(0, next);
             attribute = attributes.substr(next + 3);
         }
@@ -467,7 +467,7 @@ MRVer* SVFG::getMRVERFromString(const string& s)
     tempDef = new MSSADEF(defType, tempMemRegion);
     // mrversion
     next = s.find("MRVERSION: ") + 11;
-    last = s.find(" MSSADef:");
+    last = s.find("MSSADef:") - 1;
     temp = s.substr(next, last-next);
     // convert mrversion to nodeid
     istringstream ss2(temp);
