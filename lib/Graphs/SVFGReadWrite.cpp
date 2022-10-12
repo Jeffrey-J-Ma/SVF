@@ -424,7 +424,7 @@ void SVFG::readFile(const string& filename)
         }
     }
     stat->indVFEdgeEnd();
-    connectFromGlobalToProgEntry();
+    // connectFromGlobalToProgEntry();
 }
 
 MRVer* SVFG::getMRVERFromString(const string& s)

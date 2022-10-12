@@ -413,7 +413,7 @@ void SVFG::connectIndirectSVFGEdges()
     }
 
 
-    connectFromGlobalToProgEntry();
+    // connectFromGlobalToProgEntry();
 }
 
 
