@@ -45,7 +45,10 @@ jobs:
           echo $(pwd)
           if [ "${{matrix.sanitizer}}" != "" ]; then export SVF_SANITIZER="${{matrix.sanitizer}}"; fi
           if [ "$RUNNER_OS" == "Linux" ] && [ "${{matrix.sanitizer}}" == "" ]; then export SVF_COVERAGE=1; fi
-          git clone "https://github.com/SVF-tools/Test-Suite.git";
+          git clone "https://github.com/Jeffrey-J-Ma/Test-Suite.git";
+          cd Test-Suite;
+          git checkout ff-eq-base-fix;
+          cd ..;
           source ${{github.workspace}}/build.sh
 
       - name: ctest wpa
