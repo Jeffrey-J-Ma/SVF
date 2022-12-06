@@ -419,6 +419,7 @@ void SVFG::readFile(const string& filename)
             MRVer* tempMRVer;
             tempMRVer = getMRVERFromString(attribute);
             addIntraIndirectVFEdge(dst,src, tempMRVer->getMR()->getPointsTo());
+            delete tempMRVer;
         }
         else
         {
@@ -432,7 +433,7 @@ MRVer* SVFG::getMRVERFromString(const string& s)
 {
     if(s == "")
     {
-        return NULL;
+        return nullptr;
     }
     string temp;
     size_t last = 0;
