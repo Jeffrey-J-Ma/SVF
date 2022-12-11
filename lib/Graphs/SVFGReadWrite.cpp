@@ -277,15 +277,12 @@ void SVFG::readFile(const string& filename)
             }
             index++;
         }
-        MRVer* tempMRVer;
+        MRVer* tempMRVer = nullptr;
         if(!MR.empty())
         {
             tempMRVer = getMRVERFromString(MR);
         }
-        else
-        {
-            tempMRVer = getMRVERFromString("");
-        }
+
         //add nodes using the variables we extracted
         if(type == "FormalINSVFGNode")
         {
@@ -419,6 +416,8 @@ void SVFG::readFile(const string& filename)
             MRVer* tempMRVer;
             tempMRVer = getMRVERFromString(attribute);
             addIntraIndirectVFEdge(dst,src, tempMRVer->getMR()->getPointsTo());
+            delete tempMRVer->getDef();
+            delete tempMRVer->getMR();
             delete tempMRVer;
         }
         else
@@ -431,10 +430,6 @@ void SVFG::readFile(const string& filename)
 
 MRVer* SVFG::getMRVERFromString(const string& s)
 {
-    if(s == "")
-    {
-        return nullptr;
-    }
     string temp;
     size_t last = 0;
     size_t next = 0;

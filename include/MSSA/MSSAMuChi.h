@@ -59,6 +59,11 @@ public:
     {
     }
 
+    // Destructor
+    virtual ~MRVer()
+    {
+    }
+
     /// Return the memory region
     inline const MemRegion* getMR() const
     {

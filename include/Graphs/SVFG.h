@@ -370,6 +370,9 @@ protected:
         {
             assert((it->second == node->getId()) && "a SVFIR node can only have unique definition ");
         }
+        delete mvar->getDef();
+        delete mvar->getMR();
+        delete mvar;
     }
     inline NodeID getDef(const MRVer* mvar) const
     {
